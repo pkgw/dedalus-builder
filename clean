@@ -1,0 +1,39 @@
+#! /bin/bash
+# Copyright (c) 2017, Peter K. G. Williams.
+#
+# This file is part of Dedalus, which is free software distributed
+# under the terms of the GPLv3 license.  A copy of the license should
+# have been included in the file 'LICENSE.txt', and is also available
+# online at <http://www.gnu.org/licenses/gpl-3.0.html>.
+
+function die () {
+    echo >&2 "error:" "$@"
+    exit 1
+}
+
+stack=$(cd $(dirname $0) && pwd)/stack
+
+if [ -z "$1" ] ; then
+    echo "usage: $0 (config|packages|stack)"
+    exit 0
+fi
+
+while [ $# -gt 0 ] ; do
+    op="$1"
+    shift
+
+    case $op in
+        stack)
+            rm -rf $stack miniconda.sh ;;
+        packages)
+            platform=$($stack/bin/conda info |grep 'platform :' |sed -e 's/.*platform : //')
+            rm -f $stack/conda-bld/$platform/* $stack/conda-bld/noarch/*
+            ;;
+        config)
+            rm -f $stack/.configuration $stack/.environment.pkl
+            ;;
+        *)
+            die "unknown clean item \"$op\""
+            ;;
+    esac
+done

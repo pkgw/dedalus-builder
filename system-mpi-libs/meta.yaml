@@ -1,0 +1,28 @@
+{% set name = "system-mpi-libs" %}
+{% set version = "0.1" %}
+{% set build_number = "0" %}
+{% set build_string = "ded" %}
+{% set sha256 = "f0132c1a34408eae6353f01145220450aa8cbaaccfd99223479ef43133ea4eaf" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  fn: empty-test-tarball-1.0.2.tgz
+  url: https://registry.npmjs.org/empty-test-tarball/-/empty-test-tarball-1.0.2.tgz
+  sha256: {{ sha256 }}
+
+build:
+  number: {{ build_number }}
+  string: {{ build_number }}{{ build_string }}
+
+requirements:
+  build:
+  run:
+
+about:
+  home: http://dedalus-project.org/
+  license: GPLv3
+  license_family: GPL
+  summary: Relocatable references to the system MPI implementation.

@@ -1,0 +1,57 @@
+{% set name = "dedalus" %}
+{% set version = "20170920" %}
+{% set build_number = "0" %}
+{% set build_string = "ded" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  hg_url: https://bitbucket.org/kburns/dedalus # XXX
+  hg_tag: 760173997220 # XXX "cardinal" bookmark; symbolic name doesn't work
+  patches:
+    - install-tools.patch
+    - mpi-link.patch
+
+build:
+  number: {{ build_number }}
+  string: {{ build_number }}{{ build_string }}
+
+requirements:
+  build:
+    - cython
+    - docopt
+    - fftw
+    - h5py
+    - matplotlib
+    - mpi4py
+    - numpy
+    - pathlib
+    - python >=3
+    - scipy
+    - system-mpi-libs
+  run:
+    - cython
+    - docopt
+    - fftw
+    - h5py
+    - matplotlib
+    - mpi4py
+    - numpy
+    - pathlib
+    - python >=3
+    - scipy
+    - system-mpi-libs
+
+tests:
+  commands:
+    - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
+    - conda inspect objects -p $PREFIX $PKG_NAME  # [osx]
+  imports:
+    - dedalus.public
+
+about:
+  home: http://dedalus-project.org/
+  license: GPLv3
+  summary: PDEs

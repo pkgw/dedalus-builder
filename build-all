@@ -1,0 +1,50 @@
+#! /bin/bash
+# Copyright (c) 2017, Peter K. G. Williams.
+#
+# This file is part of Dedalus, which is free software distributed
+# under the terms of the GPLv3 license.  A copy of the license should
+# have been included in the file 'LICENSE.txt', and is also available
+# online at <http://www.gnu.org/licenses/gpl-3.0.html>.
+
+function die () {
+    echo >&2 "error:" "$@"
+    exit 1
+}
+
+stack=$(cd $(dirname $0) && pwd)/stack
+
+if [ ! -f $stack/.setup-complete ] ; then
+    die "software stack not yet set up; please run ./initialize first"
+fi
+
+set -e
+
+$stack/bin/python3 support/check-environment.py $stack/.environment.pkl
+
+platform=$($stack/bin/conda info |grep 'platform :' |sed -e 's/.*platform : //')
+
+packages=(
+    libgfortran
+    system-mpi-libs
+    fftw
+    mpi4py
+    dedalus
+)
+
+for name in "${packages[@]}" ; do
+    vers=$(grep 'set version =' $name/meta.yaml |sed -e 's/[^"]*"//' -e 's/".*//')
+    build_number=$(grep 'set build_number =' $name/meta.yaml |sed -e 's/[^"]*"//' -e 's/".*//')
+    build_string=$(grep 'set build_string =' $name/meta.yaml |sed -e 's/[^"]*"//' -e 's/".*//')
+    pkg="$stack/conda-bld/$platform/$name-$vers-$build_number$build_string.tar.bz2"
+
+    if [ "$pkg" -nt "$name/meta.yaml" ] ; then
+       echo "skipping $name: package exists and is newer than $name/meta.yaml"
+    else
+        $stack/bin/conda build --override-channels -c conda-forge $name
+    fi
+done
+
+echo
+echo "You can now create a new Python environment with Dedalus and IPython by running"
+echo "\"./install-fresh <prefix>\", or install Dedalus into an existing environment"
+echo "by running \"./install-into <prefix>\"."

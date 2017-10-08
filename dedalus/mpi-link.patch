@@ -1,0 +1,10 @@
+--- a/setup.py
++++ b/setup.py
+@@ -114,6 +114,7 @@
+ 
+ libraries = ['fftw3_mpi',
+              'fftw3',
++             'mpi',
+              'm']
+ 
+ library_dirs = [get_lib('fftw')]

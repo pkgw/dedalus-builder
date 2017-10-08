@@ -1,0 +1,10 @@
+--- a/setup.py
++++ b/setup.py
+@@ -149,6 +149,7 @@
+     license='GPL3',
+     packages = ['dedalus',
+                 'dedalus.core',
++                'dedalus.tools',
+                 'dedalus.libraries',
+                 'dedalus.libraries.fftw'],
+     cmdclass = {'build_ext': custom_build_ext},

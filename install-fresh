@@ -1,0 +1,61 @@
+#! /bin/bash
+# Copyright (c) 2017, Peter K. G. Williams.
+#
+# This file is part of Dedalus, which is free software distributed
+# under the terms of the GPLv3 license.  A copy of the license should
+# have been included in the file 'LICENSE.txt', and is also available
+# online at <http://www.gnu.org/licenses/gpl-3.0.html>.
+
+function die () {
+    echo >&2 "error:" "$@"
+    exit 1
+}
+
+stack=$(cd $(dirname $0) && pwd)/stack
+
+if [ ! -f $stack/.setup-complete ] ; then
+    die "software stack not yet set up; please run ./initialize first"
+fi
+
+prefix="$1"
+shift
+
+if [ -z "$prefix" ] ; then
+    echo "usage: $0 <prefix-to-install-to>"
+    exit 0
+fi
+
+if [ -e "$prefix" ] ; then
+    die "cannot proceed: destination \"$prefix\" already exists"
+fi
+
+set -e
+
+echo "Creating base Miniconda installation ..."
+bash miniconda.sh -b -p "$prefix"
+
+cat <<EOF >"$prefix"/.condarc
+channels:
+  - file://$stack/conda-bld
+  - conda-forge
+  - defaults
+
+envs:
+  - $prefix/envs
+EOF
+
+echo
+echo "Installing Dedalus and IPython ..."
+echo
+"$prefix"/bin/conda install -y --override-channels -c file://$stack/conda-bld -c conda-forge dedalus ipython
+
+echo
+echo "All done."
+
+if [ -e ~/.condarc ] ; then
+    echo
+    echo "Note: I have tried to set up your new stack to stay updated if you rebuild"
+    echo "the packages here and do a \"conda update\", but your \"~/.condarc\" file "
+    echo "overrides our configuration. Consider moving your \"~/.condarc\" to "
+    echo "\"$(basename $(basename $(which conda)))/.condarc\"."
+fi

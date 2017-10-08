@@ -1,0 +1,30 @@
+# This is just a repackage of default's libgfortran, since conda-forge doesn't
+# provide it and we want to be able to make environments that do not depend on
+# defaults at all (since it has currently issued a major upgrade that
+# conda-forge has not yet caught up with).
+
+{% set name = "libgfortran" %}
+{% set version = "3.0.0" %}
+{% set build_number = "1" %}
+{% set build_string = "ded" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  fn:  {{ name }}-{{ version }}.tar.bz2
+  url: https://anaconda.org/anaconda/libgfortran/3.0.0/download/linux-64/libgfortran-3.0.0-1.tar.bz2  # [linux]
+  sha256: 9971bbc316b2d56be275ccd796aedabecc414260fa0f46ee9dd1f1e40531a837  # [linux]
+
+build:
+  number: {{ build_number }}
+  string: {{ build_number }}{{ build_string }}
+
+requirements:
+  build:
+  run:
+
+about:
+  license: GPL3
+  summary: GNU Fortran runtime library

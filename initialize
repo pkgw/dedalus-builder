@@ -1,0 +1,112 @@
+#! /bin/bash
+# Copyright (c) 2017, Peter K. G. Williams.
+#
+# This file is part of Dedalus, which is free software distributed
+# under the terms of the GPLv3 license.  A copy of the license should
+# have been included in the file 'LICENSE.txt', and is also available
+# online at <http://www.gnu.org/licenses/gpl-3.0.html>.
+
+miniconda_version=4.3.21 # visit https://repo.continuum.io/miniconda/ to look for updates
+python_major_version=3
+
+function die () {
+    echo >&2 "error:" "$@"
+    exit 1
+}
+
+stack=$(cd $(dirname $0) && pwd)/stack
+
+if [ -d $stack ] ; then
+    die "cannot proceed: software stack directory $stack already exists"
+fi
+
+# Start out validating the environment. Check that the environment has MPI
+# compilers available since that's the whole point of building our own
+# packages.
+
+if ! type mpicc >/dev/null 2>&1 ; then
+    die "refusing to proceed: no MPI C compiler \"mpicc\" in \$PATH"
+fi
+
+if ! type mpicxx >/dev/null 2>&1 ; then
+    die "refusing to proceed: no MPI C++ compiler \"mpicxx\" in \$PATH"
+fi
+
+if ! type mpif90 >/dev/null 2>&1 ; then
+    die "refusing to proceed: no MPI Fortran compiler \"mpif90\" in \$PATH"
+fi
+
+if [ -n "$PYTHONPATH" ] ; then
+    die "refusing to proceed: you must unset the \$PYTHONPATH environment variable"
+fi
+
+if [ -n "$PYTHONHOME" ] ; then
+    die "refusing to proceed: you must unset the \$PYTHONHOME environment variable"
+fi
+
+# OK to go.
+
+echo "Installing software stack in directory \"$stack\"."
+
+# CPU?
+
+unamem=$(uname -m)
+(( $? )) && die "could not detect CPU type with \"uname -m\""
+
+case $unamem in
+    x86_64) arch=x86_64 ;;
+    i?86*) arch=x86 ;;
+    amd64) arch=x86_64 ;; # right?
+    ia64) arch=x86_64 ;;
+    x86pc) arch=x86 ;;
+    *) die "unrecognized/unsupported CPU type \"$unamem\"" ;;
+esac
+
+# OS?
+
+unames=$(uname -s)
+(( $? )) && die "could not detect OS type with \"uname -s\""
+
+case $unames in
+    Linux) os=Linux ;;
+    Darwin) os=MacOSX ;;
+    *) die "unrecognized/unsupported OS type \"$unames\"" ;;
+esac
+
+# Download and run the installer. Use curl since OS X doesn't have wget by default.
+
+if [ ! -f miniconda.sh ] ; then
+    url="http://repo.continuum.io/miniconda"
+    url="$url/Miniconda${python_major_version}-${miniconda_version}-${os}-${arch}.sh"
+
+    echo "Downloading $os/$arch base installer ..."
+    echo
+    curl -kL "$url" >miniconda.sh
+    (( $? )) && die "failed to download $url"
+
+    echo
+fi
+
+echo "Running the Miniconda installer ..."
+echo
+bash miniconda.sh -b -p "$stack" 2>&1 |sed -e 's/^/    /'
+(( $? )) && die "Miniconda installer reported an error"
+
+# Now update and install packages.
+
+echo
+echo "Syncing with conda-forge and installing dev tools ..."
+echo
+$stack/bin/conda update -y --override-channels -c conda-forge --all || exit 1
+$stack/bin/conda install -y --override-channels -c conda-forge conda-build || exit 1
+
+# Cache the validated environment so that we can complain if anything changes later.
+
+$stack/bin/python support/check-environment.py $stack/.environment.pkl
+touch $stack/.setup-complete
+
+# Guide the user.
+
+echo
+echo "Now run ./build-all to compile the software."
+echo

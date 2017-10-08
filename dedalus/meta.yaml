@@ -1,3 +1,10 @@
+# Copyright (c) 2017, Peter K. G. Williams.
+#
+# This file is part of Dedalus, which is free software distributed
+# under the terms of the GPLv3 license.  A copy of the license should
+# have been included in the file 'LICENSE.txt', and is also available
+# online at <http://www.gnu.org/licenses/gpl-3.0.html>.
+
 {% set name = "dedalus" %}
 {% set version = "20170920" %}
 {% set build_number = "0" %}
@@ -12,7 +19,6 @@ source:
   hg_tag: 760173997220 # XXX "cardinal" bookmark; symbolic name doesn't work
   patches:
     - install-tools.patch
-    - mpi-link.patch
 
 build:
   number: {{ build_number }}
@@ -30,7 +36,6 @@ requirements:
     - pathlib
     - python >=3
     - scipy
-    - system-mpi-libs
   run:
     - cython
     - docopt
@@ -42,7 +47,6 @@ requirements:
     - pathlib
     - python >=3
     - scipy
-    - system-mpi-libs
 
 tests:
   commands:

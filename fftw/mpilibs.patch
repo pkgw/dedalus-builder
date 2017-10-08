@@ -1,0 +1,16 @@
+--- a/configure
++++ b/configure
+@@ -13882,13 +13882,6 @@
+ 
+ 
+ if test x = x"$MPILIBS"; then
+-	ac_fn_c_check_func "$LINENO" "MPI_Init" "ac_cv_func_MPI_Init"
+-if test "x$ac_cv_func_MPI_Init" = xyes; then :
+-  MPILIBS=" "
+-fi
+-
+-fi
+-if test x = x"$MPILIBS"; then
+ 	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for MPI_Init in -lmpi" >&5
+ $as_echo_n "checking for MPI_Init in -lmpi... " >&6; }
+ if ${ac_cv_lib_mpi_MPI_Init+:} false; then :

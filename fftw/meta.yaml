@@ -1,3 +1,13 @@
+# Copyright (c) 2017, Peter K. G. Williams.
+#
+# This file is part of Dedalus, which is free software distributed
+# under the terms of the GPLv3 license.  A copy of the license should
+# have been included in the file 'LICENSE.txt', and is also available
+# online at <http://www.gnu.org/licenses/gpl-3.0.html>.
+
+# This is a fairly straight copy of the conda-forge build script for fftw,
+# modified to build MPI versions as well.
+
 {% set name = "fftw" %}
 {% set version = "3.3.6" %}
 {% set build_number = "0" %}
@@ -12,6 +22,8 @@ source:
   fn: {{ name }}-{{ version }}.tar.gz
   url: http://www.fftw.org/fftw-{{ version }}-pl2.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - mpilibs.patch
 
 build:
   number: {{ build_number }}

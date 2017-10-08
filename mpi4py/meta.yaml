@@ -1,3 +1,15 @@
+# Copyright (c) 2017, Peter K. G. Williams.
+#
+# This file is part of Dedalus, which is free software distributed
+# under the terms of the GPLv3 license.  A copy of the license should
+# have been included in the file 'LICENSE.txt', and is also available
+# online at <http://www.gnu.org/licenses/gpl-3.0.html>.
+
+# This is a fairly straightforward rebundling of conda-forge's mpi4py recipe,
+# except that it uses `system-mpi-libs` rather than the bundled `mpich`. We
+# only build this package if `use_system_mpi` is 1, since otherwise we can
+# just use the conda-forge version.
+
 {% set name = "mpi4py" %}
 {% set version = "2.0.0" %}
 {% set build_number = "0" %}

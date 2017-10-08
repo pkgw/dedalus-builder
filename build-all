@@ -17,17 +17,29 @@ if [ ! -f $stack/.setup-complete ] ; then
     die "software stack not yet set up; please run ./initialize first"
 fi
 
+if [ ! -f $stack/.configuration ] ; then
+    die "software stack not yet set up; please run ./configure first"
+fi
+
 set -e
 
 $stack/bin/python3 support/check-environment.py $stack/.environment.pkl
 
 platform=$($stack/bin/conda info |grep 'platform :' |sed -e 's/.*platform : //')
 
+source $stack/.configuration
+export use_system_mpi
+
 packages=(
     libgfortran
-    system-mpi-libs
+)
+
+if [ $use_system_mpi -ne 0 ] ; then
+    packages+=(system-mpi-libs mpi4py)
+fi
+
+packages+=(
     fftw
-    mpi4py
     dedalus
 )
 
@@ -48,3 +60,4 @@ echo
 echo "You can now create a new Python environment with Dedalus and IPython by running"
 echo "\"./install-fresh <prefix>\", or install Dedalus into an existing environment"
 echo "by running \"./install-into <prefix>\"."
+echo

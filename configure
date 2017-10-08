@@ -1,0 +1,64 @@
+#! /bin/bash
+# Copyright (c) 2017, Peter K. G. Williams.
+#
+# This file is part of Dedalus, which is free software distributed
+# under the terms of the GPLv3 license.  A copy of the license should
+# have been included in the file 'LICENSE.txt', and is also available
+# online at <http://www.gnu.org/licenses/gpl-3.0.html>.
+
+function die () {
+    echo >&2 "error:" "$@"
+    exit 1
+}
+
+stack=$(cd $(dirname $0) && pwd)/stack
+
+if [ ! -f $stack/.setup-complete ] ; then
+    die "software stack not yet set up; please run ./initialize first"
+fi
+
+# Basic validation.
+
+if [ -n "$PYTHONPATH" ] ; then
+    die "refusing to proceed: you must unset the \$PYTHONPATH environment variable"
+fi
+
+if [ -n "$PYTHONHOME" ] ; then
+    die "refusing to proceed: you must unset the \$PYTHONHOME environment variable"
+fi
+
+echo "# dedalus-build configuration" >$stack/.configuration
+
+# MPI. If `mpicc` is available, we will use the system MPI setup; otherwise
+# we will use Anaconda/conda-forge’s bundled version, which uses a basic
+# mpich installation.
+
+if type mpicc >/dev/null 2>&1 ; then
+    # mpicc is in $PATH => assume the user has a system MPI they want to use.
+    echo "MPI: using system installation"
+    echo "  mpicc:" $(which mpicc)
+
+    if ! type mpicxx >/dev/null 2>&1 ; then
+        die "refusing to proceed: no MPI C++ compiler \"mpicxx\" in \$PATH"
+    fi
+
+    if ! type mpif90 >/dev/null 2>&1 ; then
+        die "refusing to proceed: no MPI Fortran compiler \"mpif90\" in \$PATH"
+    fi
+
+    echo 'use_system_mpi=1' >>$stack/.configuration
+else
+    echo "MPI: using Anaconda installation (because no \"mpicc\" in \$PATH)"
+    echo 'use_system_mpi=0' >>$stack/.configuration
+fi
+
+# Cache the validated environment so that we can complain if anything changes later.
+
+rm -f $stack/.environment.pkl
+$stack/bin/python support/check-environment.py $stack/.environment.pkl
+
+# Guide the user.
+
+echo
+echo "If you are happy with the configuration, now run ./build-all to compile the software."
+echo

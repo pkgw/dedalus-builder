@@ -1,3 +1,10 @@
+# Copyright (c) 2017, Peter K. G. Williams.
+#
+# This file is part of Dedalus, which is free software distributed
+# under the terms of the GPLv3 license.  A copy of the license should
+# have been included in the file 'LICENSE.txt', and is also available
+# online at <http://www.gnu.org/licenses/gpl-3.0.html>.
+
 # This is just a repackage of default's libgfortran, since conda-forge doesn't
 # provide it and we want to be able to make environments that do not depend on
 # defaults at all (since it has currently issued a major upgrade that

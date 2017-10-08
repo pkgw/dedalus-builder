@@ -32,9 +32,17 @@ build:
 requirements:
   build:
     - perl 5.22.2.1
+{% if use_system_mpi != '0' %}
     - system-mpi-libs
+{% else %}
+    - mpich
+{% endif %}
   run:
+{% if use_system_mpi != '0' %}
     - system-mpi-libs
+{% else %}
+    - mpich
+{% endif %}
 
 test:
   commands:

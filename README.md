@@ -22,11 +22,19 @@ systems, if they have a compatible setup, but they probably won’t be.
 
 ## Instructions
 
-First, set up your shell so that your MPI system is accessible: the commands
-`mpicc` and `mpicxx` should be in your `$PATH`.
+First, set up your shell environment so that the programs can identify any
+system libraries you wish to use:
+
+- If you wish to use a system MPI installation, make sure that the desired
+  `mpicc` program is in your `$PATH`. Otherwise, Anaconda’s prepackaged
+  MPI implementation will be used.
 
 Then, run `./initialize`. This will download and set up a self-contained
 version of the Conda build infrastructure.
+
+Then, run `./configure`. This will validate your build configuration and save
+its parameters. If you want, you can alter your environment and rerun this
+script.
 
 Then run `./build-all`. This will compile Dedalus and its the MPI-sensitive
 dependencies, creating binary package files in the Conda format. The goal is

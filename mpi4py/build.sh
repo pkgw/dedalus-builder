@@ -7,6 +7,7 @@
 # have been included in the file 'LICENSE.txt', and is also available
 # online at <http://www.gnu.org/licenses/gpl-3.0.html>.
 
-export LDFLAGS="-Wl,-rpath,/a/lib"
+set -e
+eval $($DEDALUS_BUILDER_SETUP)
 
 exec python setup.py install --single-version-externally-managed --record=files.txt

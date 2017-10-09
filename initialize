@@ -84,6 +84,15 @@ echo
 $stack/bin/conda update -y --override-channels -c conda-forge --all || exit 1
 $stack/bin/conda install -y --override-channels -c conda-forge conda-build || exit 1
 
+# A hack so that our build scripts can import user environment variables
+# without needing their own build-time Python installs.
+
+cat <<EOF >$stack/bin/dedalus_builder_setup
+#! /bin/bash
+exec $stack/bin/python $stack/../support/export-environment.py "\$@"
+EOF
+chmod +x $stack/bin/dedalus_builder_setup
+
 # All done. Guide the user.
 
 touch $stack/.setup-complete

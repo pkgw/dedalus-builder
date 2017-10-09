@@ -25,6 +25,8 @@ set -e
 
 $stack/bin/python3 support/check-environment.py $stack/.environment.pkl
 
+export DEDALUS_BUILDER_SETUP="$stack/bin/dedalus_builder_setup $stack/.environment.pkl $stack/.configuration"
+
 platform=$($stack/bin/conda info |grep 'platform :' |sed -e 's/.*platform : //')
 
 source $stack/.configuration

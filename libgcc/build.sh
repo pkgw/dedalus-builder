@@ -7,5 +7,7 @@
 # online at <http://www.gnu.org/licenses/gpl-3.0.html>.
 
 set -e
+eval $($DEDALUS_BUILDER_SETUP)
+
 mkdir -p $PREFIX/lib
 cp -a lib/* $PREFIX/lib

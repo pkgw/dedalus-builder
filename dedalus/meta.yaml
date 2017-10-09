@@ -23,6 +23,8 @@ source:
 build:
   number: {{ build_number }}
   string: {{ build_number }}{{ build_string }}
+  script_env:
+    - DEDALUS_BUILDER_SETUP
 
 requirements:
   build:

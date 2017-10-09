@@ -7,16 +7,19 @@
 # have been included in the file 'LICENSE.txt', and is also available
 # online at <http://www.gnu.org/licenses/gpl-3.0.html>.
 
+set -e
+eval $($DEDALUS_BUILDER_SETUP)
+
 if [[ `uname` == 'Darwin' ]]; then
     export LIBRARY_SEARCH_VAR=DYLD_FALLBACK_LIBRARY_PATH
-    export CXXFLAGS="-stdlib=libc++"
-    export CXX_LDFLAGS="-stdlib=libc++"
+    export CXXFLAGS="-stdlib=libc++ $CXXFLAGS"
+    export CXX_LDFLAGS="-stdlib=libc++ $CXX_LDFLAGS"
 else
     export LIBRARY_SEARCH_VAR=LD_LIBRARY_PATH
 fi
 
-export LDFLAGS="-L${PREFIX}/lib"
-export CFLAGS="${CFLAGS} -I${PREFIX}/include"
+export LDFLAGS="$LDFLAGS -L${PREFIX}/lib"
+export CFLAGS="$CFLAGS -I${PREFIX}/include"
 
 configure_args=(
     --prefix=$PREFIX

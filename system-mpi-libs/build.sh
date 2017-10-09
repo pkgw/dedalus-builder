@@ -8,6 +8,7 @@
 # online at <http://www.gnu.org/licenses/gpl-3.0.html>.
 
 set -e
+eval $($DEDALUS_BUILDER_SETUP)
 
 # Compile some test binaries that will link with needed MPI support libraries.
 

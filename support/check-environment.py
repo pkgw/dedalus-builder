@@ -15,7 +15,7 @@ from __future__ import absolute_import, division, print_function
 
 import os.path
 import pickle
-import signal
+import pwkit.cli
 import sys
 import time
 
@@ -40,18 +40,9 @@ PKG_CONFIG_PATH
 '''.split()
 
 def main(env_path):
-    # Propagate SIGINT so the parent shell quits if we get control-C'ed. See
-    # https://github.com/pkgw/pwkit/blob/master/pwkit/cli/__init__.py#L74
+    # Propagate SIGINT so the parent shell quits if we get control-C'ed.
 
-    inner_excepthook = sys.excepthook
-
-    def excepthook(etype, evalue, etb):
-        inner_excepthook(etype, evalue, etb)
-        if issubclass(etype, KeyboardInterrupt):
-            signal.signal(signal.SIGINT, signal.SIG_DFL)
-            os.kill(os.getpid(), signal.SIGINT)
-
-    sys.excepthook = excepthook
+    pwkit.cli.propagate_sigint()
 
     # On with the show.
 

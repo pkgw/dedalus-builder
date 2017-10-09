@@ -35,9 +35,13 @@ set -e
 
 $stack/bin/python support/check-environment.py $stack/.environment.pkl
 
+# Adopt the build environment.
+export PATH="$stack/bin:$PATH"
+hash -r
+
 export DEDALUS_BUILDER_SETUP="$stack/bin/dedalus_builder_setup $stack/.environment.pkl $stack/.configuration"
 
-platform=$($stack/bin/conda info |grep 'platform :' |sed -e 's/.*platform : //')
+platform=$(conda info |grep 'platform :' |sed -e 's/.*platform : //')
 
 source $stack/.configuration
 export use_system_blas # these need to be exported now to take effect in the Jinja templating
@@ -96,7 +100,8 @@ for name in "${packages[@]}" ; do
         fi
     fi
 
-    PATH="$stack/bin:$PATH" $stack/bin/conda build --python $dedalus_python_version --override-channels -c conda-forge $name
+    echo "Building $name with logs to $name/build.log ..."
+    wrapout -c conda build --python $dedalus_python_version --override-channels -c conda-forge $name >$name/build.log
 done
 
 echo

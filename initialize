@@ -90,7 +90,7 @@ echo
 echo "Syncing with conda-forge and installing dev tools ..."
 echo
 $stack/bin/conda update -y --override-channels -c conda-forge --all || exit 1
-$stack/bin/conda install -y --override-channels -c conda-forge conda-build mercurial || exit 1
+$stack/bin/conda install -y --override-channels -c conda-forge conda-build mercurial pwkit || exit 1
 
 # A hack so that our build scripts can import user environment variables
 # without needing their own build-time Python installs.

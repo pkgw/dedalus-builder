@@ -6,10 +6,10 @@ in a way that leverages your system’s native MPI implementation.
 ## The approach
 
 We use Anaconda Python and its `conda` tool to make packages of Dedalus and
-its dependencies. We use packages from the
-[conda-forge](https://conda-forge.org/) project whenever possible to provide
-generic, pre-built versions of software that do not depend sensitively on your
-system’s particular characteristics.
+its dependencies. For dependencies that do not depend sensitively on your
+system’s particular characteristics, we use pre-built packages from the
+[conda-forge](https://conda-forge.org/) project. But when we can take
+advantage of your system MPI installation, we build custom packages.
 
 You can then install these packages into new directory to create a
 self-contained Python installation that includes Dedalus and its dependencies.

@@ -61,7 +61,7 @@ echo
 "$prefix"/bin/conda install -y --override-channels -c file://$stack/conda-bld -c conda-forge dedalus ipython
 
 echo
-echo "All done."
+echo "All done. Put $prefix/bin at the head of your \$PATH to use a Dedalus-enabled Python 3 installation."
 
 if [ -e ~/.condarc ] ; then
     echo

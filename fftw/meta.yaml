@@ -6,7 +6,8 @@
 # online at <http://www.gnu.org/licenses/gpl-3.0.html>.
 
 # This is a fairly straight copy of the conda-forge build script for fftw,
-# modified to build MPI versions as well.
+# modified to build MPI versions as well. We also don't bother with the
+# static libraries.
 
 {% set name = "fftw" %}
 {% set version = "3.3.6" %}
@@ -46,13 +47,6 @@ requirements:
 
 test:
   commands:
-    - exit $(test -f ${PREFIX}/lib/libfftw3f.a)          # [not win]
-    - exit $(test -f ${PREFIX}/lib/libfftw3.a)           # [not win]
-    - exit $(test -f ${PREFIX}/lib/libfftw3l.a)          # [not win]
-    - exit $(test -f ${PREFIX}/lib/libfftw3f_threads.a)  # [not win]
-    - exit $(test -f ${PREFIX}/lib/libfftw3_threads.a)   # [not win]
-    - exit $(test -f ${PREFIX}/lib/libfftw3l_threads.a)  # [not win]
-
     # Verify headers are installed
     - test -f ${PREFIX}/include/fftw3.h                  # [not win]
     - test -f ${PREFIX}/include/fftw3-mpi.h              # [not win]

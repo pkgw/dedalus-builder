@@ -22,6 +22,7 @@ configure_args=(
     --prefix=$PREFIX
     --with-pic
     --enable-shared
+    --disable-static
     --enable-threads
     --enable-mpi
     CC=mpicc
@@ -47,5 +48,5 @@ done
 # Clean up the install a bit
 
 cd $PREFIX
-rm -f $lib/*.la
+rm -f lib/*.la lib/*.a
 rm -rf share/info share/man

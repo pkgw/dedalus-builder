@@ -29,11 +29,15 @@ mkdir -p $PREFIX/lib
 if [ $(uname) = Linux ] ; then
     for prog in c_demo cxx_demo f90_demo ; do
         ldd $prog |grep '=>' |while read soname arrow path address ; do
+            if [ -z "$address" ] ; then
+                continue # some ldd's give this: "linux-vdso.so.1 =>  (0x00007ffc26ba8000)"
+            fi
+
             case $path in
                 /lib*) ;;
                 /usr/lib*) ;;
                 *)
-                    ln -sf $(realpath $path) $PREFIX/lib/$soname
+                    ln -sf $path $PREFIX/lib/$soname
                     ;;
             esac
         done

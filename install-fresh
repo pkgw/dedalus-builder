@@ -45,8 +45,19 @@ envs:
 EOF
 
 echo
+echo "Syncing with conda-forge ..."
+echo
+"$prefix"/bin/conda update -y --override-channels -c conda-forge --all
+
+# At the moment, the depsolver seems to erroneously pull in defaults packages
+# if I just try to install `dedalus` straight off; I can't tell why, since
+# --override-channels should suppress this entirely. It doesn't happen if I break
+# the install into two steps, so that's what I do.
+
+echo
 echo "Installing Dedalus and IPython ..."
 echo
+"$prefix"/bin/conda install -y --override-channels -c file://$stack/conda-bld -c conda-forge scipy
 "$prefix"/bin/conda install -y --override-channels -c file://$stack/conda-bld -c conda-forge dedalus ipython
 
 echo

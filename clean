@@ -14,7 +14,7 @@ function die () {
 stack=$(cd $(dirname $0) && pwd)/stack
 
 if [ -z "$1" ] ; then
-    echo "usage: $0 (config|packages|stack)"
+    echo "usage: $0 (builddirs|config|packages|stack)"
     exit 0
 fi
 
@@ -23,6 +23,8 @@ while [ $# -gt 0 ] ; do
     shift
 
     case $op in
+        builddirs)
+            $stack/bin/conda build purge ;;
         stack)
             rm -rf $stack miniconda.sh ;;
         packages)

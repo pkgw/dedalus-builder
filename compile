@@ -101,7 +101,8 @@ for name in "${packages[@]}" ; do
     fi
 
     echo "Building $name with logs to $name/build.log ..."
-    wrapout -c conda build --python $dedalus_python_version --override-channels -c conda-forge $name >$name/build.log
+    wrapout -c conda build --python $dedalus_python_version --override-channels -c conda-forge $name >$name/build.log ||
+      die "package build failed! Consult $name/build.log for details."
 done
 
 echo

@@ -25,6 +25,12 @@ SHLVL
 _
 '''.split()
 
+conda_build_overridden_vars = '''
+CONDA_PREFIX
+LD_RUN_PATH
+PERL
+PKG_CONFIG_PATH
+'''.split()
 
 def main(env_path):
     # Propagate SIGINT so the parent shell quits if we get control-C'ed. See
@@ -52,6 +58,13 @@ def main(env_path):
     for var in ignore_env_vars:
         cur_env.pop(var, None)
 
+    any_warnings = False
+
+    for var in conda_build_overridden_vars:
+        if var in cur_env:
+            print('WARNING: the variable %s will be overridden in the build process' % var)
+            any_warnings = True
+
     if prev_env is not None:
         changed = []
 
@@ -70,8 +83,11 @@ def main(env_path):
             print('WARNING: the build environment changed from the previous run:', file=sys.stderr)
             for desc in changed:
                 print('   ', desc, file=sys.stderr)
-            print('I will pause to let you hit control-C if you want to cancel the build.', file=sys.stderr)
-            time.sleep(10)
+            any_warnings = True
+
+    if any_warnings:
+        print('I will pause to let you hit control-C if you want to cancel the build.', file=sys.stderr)
+        time.sleep(10)
 
     with open(env_path, 'wb') as f:
         pickle.dump(cur_env, f)

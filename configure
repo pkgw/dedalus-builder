@@ -47,10 +47,6 @@ if [ -n "$PYTHONHOME" ] ; then
     die "refusing to proceed: you must unset the \$PYTHONHOME environment variable"
 fi
 
-if type hg >/dev/null 2>&1 ; then
-    die "refusing to proceed: you must have the \"hg\" program in your \$PATH"
-fi
-
 echo "# dedalus-build configuration" >$stack/.configuration
 
 # MPI. If `mpicc` is available, we will use the system MPI setup; otherwise

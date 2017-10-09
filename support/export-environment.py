@@ -16,11 +16,31 @@ here is to build system-specific packages.
 The merged environment information is printed to stdout in bash syntax so that
 it can easily be imported into the build script's environment.
 
+Note that this program runs in Python *2* since it is invoked using the outer
+build environment, which is limited to Python 2 for Mercurial.
+
 """
+from __future__ import absolute_import, division, print_function
+
 import os
 import pickle
-import shlex
 import sys
+
+
+# Python 3's shlex module has a quote function, but Python 2 doesn't. Copy
+# it assuming that no one's messing with us too badly.
+
+def shlex_quote(s):
+    """Return a shell-escaped version of the string *s*."""
+    if not s:
+        return "''"
+    # PKGW: builtin not available in Python 2
+    ###if _find_unsafe(s) is None:
+    ###    return s
+
+    # use single quotes, and put single quotes into double quotes
+    # the string $'b is then quoted as '$'"'"'b'
+    return "'" + s.replace("'", "'\"'\"'") + "'"
 
 
 suppressed_vars = frozenset('''
@@ -59,7 +79,7 @@ def main(env_path, config_path):
         if var.startswith('_ModuleTable'):
             continue # big state for lmod module system
 
-        print('export %s=%s;' % (shlex.quote(var), shlex.quote(value)))
+        print('export %s=%s;' % (shlex_quote(var), shlex_quote(value)))
 
 
 if __name__ == '__main__':

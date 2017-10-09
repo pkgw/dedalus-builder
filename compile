@@ -6,6 +6,8 @@
 # have been included in the file 'LICENSE.txt', and is also available
 # online at <http://www.gnu.org/licenses/gpl-3.0.html>.
 
+dedalus_python_version=3.6
+
 function die () {
     echo >&2 "error:" "$@"
     exit 1
@@ -31,7 +33,7 @@ fi
 
 set -e
 
-$stack/bin/python3 support/check-environment.py $stack/.environment.pkl
+$stack/bin/python support/check-environment.py $stack/.environment.pkl
 
 export DEDALUS_BUILDER_SETUP="$stack/bin/dedalus_builder_setup $stack/.environment.pkl $stack/.configuration"
 
@@ -94,7 +96,7 @@ for name in "${packages[@]}" ; do
         fi
     fi
 
-    $stack/bin/conda build --override-channels -c conda-forge $name
+    PATH="$stack/bin:$PATH" $stack/bin/conda build --python $dedalus_python_version --override-channels -c conda-forge $name
 done
 
 echo

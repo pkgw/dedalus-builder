@@ -6,6 +6,13 @@
 # have been included in the file 'LICENSE.txt', and is also available
 # online at <http://www.gnu.org/licenses/gpl-3.0.html>.
 
+"""Check and save the user's build environment. Note that this script runs in
+Python *2* since that is what our outer build environment requires, since
+Mercurial is Python-2-only.
+
+"""
+from __future__ import absolute_import, division, print_function
+
 import os.path
 import pickle
 import signal
@@ -51,8 +58,11 @@ def main(env_path):
     try:
         with open(env_path, 'rb') as f:
             prev_env = pickle.load(f)
-    except FileNotFoundError:
-        prev_env = None
+    except IOError as e:
+        if e.errno == 2:
+            prev_env = None
+        else:
+            raise
 
     cur_env = dict(os.environ)
     for var in ignore_env_vars:

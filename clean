@@ -26,7 +26,7 @@ while [ $# -gt 0 ] ; do
         builddirs)
             $stack/bin/conda build purge ;;
         stack)
-            rm -rf $stack miniconda.sh ;;
+            rm -rf $stack miniconda?.sh ;;
         packages)
             platform=$($stack/bin/conda info |grep 'platform :' |sed -e 's/.*platform : //')
             rm -f $stack/conda-bld/$platform/* $stack/conda-bld/noarch/*

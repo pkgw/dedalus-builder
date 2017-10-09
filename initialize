@@ -7,7 +7,6 @@
 # online at <http://www.gnu.org/licenses/gpl-3.0.html>.
 
 miniconda_version=4.3.21 # visit https://repo.continuum.io/miniconda/ to look for updates
-python_major_version=3
 
 function die () {
     echo >&2 "error:" "$@"
@@ -57,24 +56,33 @@ case $unames in
     *) die "unrecognized/unsupported OS type \"$unames\"" ;;
 esac
 
-# Download and run the installer. Use curl since OS X doesn't have wget by default.
+# Download Miniconda installers. Use curl since OS X doesn't have wget by default.
+#
+# Dedalus uses Python 3, but it requires Mercurial to build, and Mercurial is Python-2-only!
+# Fortunately Conda can build Python 3 packages if the underlying stack is Python 2 and vice
+# versa. So we set up our build environment in Python 2, but download the Python 3 installer
+# so we can do proper fresh installs.
 
-if [ ! -f miniconda.sh ] ; then
-    url="http://repo.continuum.io/miniconda"
-    url="$url/Miniconda${python_major_version}-${miniconda_version}-${os}-${arch}.sh"
+for python_major_version in 2 3 ; do
+    if [ ! -f miniconda$python_major_version.sh ] ; then
+        url="http://repo.continuum.io/miniconda"
+        url="$url/Miniconda${python_major_version}-${miniconda_version}-${os}-${arch}.sh"
 
-    echo "Downloading $os/$arch base installer ..."
-    echo
-    curl -kL "$url" >miniconda.sh
-    (( $? )) && die "failed to download $url"
+        echo "Downloading Miniconda Python $python_major_version $os/$arch base installer ..."
+        echo
+        curl -kL "$url" >miniconda$python_major_version.sh
+        (( $? )) && die "failed to download $url"
 
-    echo
-fi
+        echo
+    fi
+done
 
-echo "Running the Miniconda installer ..."
+# Now install our Python 2 (for Mercurial) build env.
+
+echo "Running the Miniconda2 installer ..."
 echo
-bash miniconda.sh -b -p "$stack" 2>&1 |sed -e 's/^/    /'
-(( $? )) && die "Miniconda installer reported an error"
+bash miniconda2.sh -b -p "$stack" 2>&1 |sed -e 's/^/    /'
+(( $? )) && die "Miniconda2 installer reported an error"
 
 # Now update and install packages.
 
@@ -82,7 +90,7 @@ echo
 echo "Syncing with conda-forge and installing dev tools ..."
 echo
 $stack/bin/conda update -y --override-channels -c conda-forge --all || exit 1
-$stack/bin/conda install -y --override-channels -c conda-forge conda-build || exit 1
+$stack/bin/conda install -y --override-channels -c conda-forge conda-build mercurial || exit 1
 
 # A hack so that our build scripts can import user environment variables
 # without needing their own build-time Python installs.

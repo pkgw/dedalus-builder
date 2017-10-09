@@ -5,12 +5,13 @@
 # have been included in the file 'LICENSE.txt', and is also available
 # online at <http://www.gnu.org/licenses/gpl-3.0.html>.
 
-# This package provides files in $PREFIX/lib that symlink to the system's MPI
-# installation. We do this because conda-build strips out rpaths that point to
-# non-system locations from the binaries it creates, so we need to pretend
-# that we're linking to local libraries.
+# This package provides files in $PREFIX/lib that symlink to shared libraries
+# needed by whatever system resources (MPI, BLAS, etc.) we use. We do this
+# because conda-build strips out rpaths that point to non-system locations
+# from the binaries it creates, so we need to pretend that we're linking to
+# local libraries.
 
-{% set name = "system-mpi-libs" %}
+{% set name = "system-libs" %}
 {% set version = "0.1" %}
 {% set build_number = "0" %}
 {% set build_string = "ded" %}
@@ -39,4 +40,4 @@ about:
   home: http://dedalus-project.org/
   license: GPLv3
   license_family: GPL
-  summary: Relocatable references to the system MPI implementation.
+  summary: Relocatable references to system shared libraries.

@@ -1,0 +1,58 @@
+# Copyright (c) 2017, Peter K. G. Williams.
+#
+# This file is part of Dedalus, which is free software distributed
+# under the terms of the GPLv3 license.  A copy of the license should
+# have been included in the file 'LICENSE.txt', and is also available
+# online at <http://www.gnu.org/licenses/gpl-3.0.html>.
+
+# This is a fairly straightforward rebundling of conda-forge's numpy recipe,
+# except that it uses `system-blas-libs` rather than the bundled `openblas`. We
+# only build this package if `use_system_blas` is 1, since otherwise we can
+# just use the conda-forge version.
+
+{% set name = "numpy" %}
+{% set version = "1.13.3" %}
+{% set build_number = "0" %}
+{% set build_string = "ded" %}
+{% set sha256 = "4c6b4eef790528bebb7ec9590d74cc193868940fe68e4109a91c196df72d8094" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/numpy/numpy/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: {{ build_number }}
+  string: {{ build_number }}{{ build_string }}
+  script_env:
+    - DEDALUS_BUILDER_SETUP
+
+requirements:
+  build:
+    - cython
+    - python
+    - setuptools
+    - system-libs
+  run:
+    - python
+    - system-libs
+
+test:
+  requires:
+    - nose
+  commands:
+    - f2py -h
+    - conda inspect linkages -p $PREFIX numpy  # [not win]
+    - conda inspect objects -p $PREFIX numpy  # [osx]
+  imports:
+    - numpy
+    - numpy.linalg.lapack_lite
+
+about:
+  home: http://numpy.scipy.org/
+  license: BSD 3-Clause
+  license_file: LICENSE.txt
+  summary: 'Array processing for numbers, strings, records, and objects, using system BLAS libraries.'

@@ -35,10 +35,10 @@ requirements:
   build:
     - python
     - pip
-    - system-mpi-libs
+    - system-libs
   run:
     - python
-    - system-mpi-libs
+    - system-libs
 
 test:
   imports:

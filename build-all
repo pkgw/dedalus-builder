@@ -30,19 +30,29 @@ export DEDALUS_BUILDER_SETUP="$stack/bin/dedalus_builder_setup $stack/.environme
 platform=$($stack/bin/conda info |grep 'platform :' |sed -e 's/.*platform : //')
 
 source $stack/.configuration
+export use_system_blas # these need to be exported now to take effect in the Jinja templating
+export system_blas_dir
 export use_system_mpi
 
-packages=(
-    libgfortran
-)
+packages=(system-libs)
+
+if [ $use_system_blas -ne 0 ] ; then
+    # Build custom copies of the packages that depend sensitively on the system
+    # BLAS implementation.
+    packages+=(numpy scipy)
+else
+    # conda-forge's `openblas` depends on `libgfortran` which is only
+    # available in `defaults`, not purely `conda-forge`, so we repackage an
+    # appropriate version while `defaults` and `conda-forge` are substantially
+    # out of sync with regards to compiler versions.
+    packages+=(libgfortran)
+fi
 
 if [ $use_system_mpi -ne 0 ] ; then
-    packages+=(system-mpi-libs mpi4py)
+    # Custom copies of packages that depend sensitively on the system MPI implementation.
+    packages+=(mpi4py)
 else
-    # mpich depends on libgcc which is only available in `defaults`, not
-    # purely `conda-forge`, so we repackage an appropriate version while
-    # `defaults` and `conda-forge` are substantially out of sync with regards
-    # to compiler versions.
+    # Same deal as above, except with `mpich` depending on `libgcc`
     packages+=(libgcc)
 fi
 

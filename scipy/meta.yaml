@@ -1,0 +1,62 @@
+# Copyright (c) 2017, Peter K. G. Williams.
+#
+# This file is part of Dedalus, which is free software distributed
+# under the terms of the GPLv3 license.  A copy of the license should
+# have been included in the file 'LICENSE.txt', and is also available
+# online at <http://www.gnu.org/licenses/gpl-3.0.html>.
+
+# This is a fairly straightforward rebundling of conda-forge's scipy recipe,
+# except that it uses `system-blas-libs` rather than the bundled `openblas`. We
+# only build this package if `use_system_blas` is 1, since otherwise we can
+# just use the conda-forge version.
+
+{% set name = "scipy" %}
+{% set version = "0.19.1" %}
+{% set build_number = "0" %}
+{% set build_string = "ded" %}
+{% set sha256 = "ac268fe92edd149c6f52fa138d2a03877c080981d7944e96bab8ef68764f71cc" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/scipy/scipy/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: {{ build_number }}
+  string: {{ build_number }}{{ build_string }}
+  script_env:
+    - DEDALUS_BUILDER_SETUP
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - cython
+    - system-libs
+    - numpy
+  run:
+    - python
+    - system-libs
+    - numpy
+
+test:
+  requires:
+    - nose
+    - mpmath
+  commands:
+    - conda inspect linkages -p $PREFIX scipy  # [not win]
+    - conda inspect objects -p $PREFIX scipy  # [osx]
+
+about:
+  home: http://www.scipy.org/
+  license: BSD 3-Clause
+  license_file: LICENSE.txt
+  summary: Scientific Library for Python, with system BLAS
+  description: |
+    SciPy is a Python-based ecosystem of open-source software for mathematics,
+    science, and engineering.
+  doc_url: http://www.scipy.org/docs.html
+  dev_url: https://github.com/scipy/scipy

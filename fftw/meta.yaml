@@ -35,17 +35,15 @@ build:
 requirements:
   build:
     - perl 5.22.2.1
-{% if use_system_mpi != '0' %}
-    - system-mpi-libs
-{% else %}
+{% if use_system_mpi == '0' %}
     - mpich
 {% endif %}
+    - system-libs
   run:
-{% if use_system_mpi != '0' %}
-    - system-mpi-libs
-{% else %}
+{% if use_system_mpi == '0' %}
     - mpich
 {% endif %}
+    - system-libs
 
 test:
   commands:

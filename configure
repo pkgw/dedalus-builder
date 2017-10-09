@@ -17,6 +17,26 @@ if [ ! -f $stack/.setup-complete ] ; then
     die "software stack not yet set up; please run ./initialize first"
 fi
 
+# Arg parsing.
+
+while [ $# -gt 0 ] ; do
+    arg="$1"
+    shift
+
+    case "$arg" in
+        --with-blas=*)
+            system_blas_dir=$(echo "$arg" |sed -e s/--with-blas=//)
+            ;;
+        -h|--help)
+            echo "usage: $0 [--with-blas=BLAS-LIB-DIR]"
+            exit 0
+            ;;
+        *)
+            die "unrecognized option \"$arg\""
+            ;;
+    esac
+done
+
 # Basic validation.
 
 if [ -n "$PYTHONPATH" ] ; then
@@ -25,6 +45,10 @@ fi
 
 if [ -n "$PYTHONHOME" ] ; then
     die "refusing to proceed: you must unset the \$PYTHONHOME environment variable"
+fi
+
+if type hg >/dev/null 2>&1 ; then
+    die "refusing to proceed: you must have the \"hg\" program in your \$PATH"
 fi
 
 echo "# dedalus-build configuration" >$stack/.configuration
@@ -50,6 +74,19 @@ if type mpicc >/dev/null 2>&1 ; then
 else
     echo "MPI: using Anaconda installation (because no \"mpicc\" in \$PATH)"
     echo 'use_system_mpi=0' >>$stack/.configuration
+fi
+
+# BLAS-type libraries.
+
+if [ -z "$system_blas_dir" ] ; then
+    echo "BLAS: using Anaconda installation (because no \"--with-blas=LIBDIR\" argument was given)"
+    echo "use_system_blas=0" >>$stack/.configuration
+else
+    echo "BLAS: using system installation"
+    echo "  libdir: $system_blas_dir"
+    echo "  note: this requires compiling Numpy and Scipy, which will take a while"
+    echo "use_system_blas=1" >>$stack/.configuration
+    echo "system_blas_dir=$system_blas_dir" >>$stack/.configuration
 fi
 
 # Cache the validated environment so that we can complain if anything changes later.

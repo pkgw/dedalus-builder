@@ -11,6 +11,14 @@ function die () {
     exit 1
 }
 
+if [ "$1" = -h -o "$1" = --help ] ; then
+    echo "usage: $0 [packagename packagename...]"
+    echo
+    echo "Builds all needed packages if no arguments are given. Otherwise, builds the packages"
+    echo "named on the command line."
+    exit 0
+fi
+
 stack=$(cd $(dirname $0) && pwd)/stack
 
 if [ ! -f $stack/.setup-complete ] ; then
@@ -34,44 +42,59 @@ export use_system_blas # these need to be exported now to take effect in the Jin
 export system_blas_dir
 export use_system_mpi
 
-# conda-forge's `hdf5` depends on `libgfortran` which is only available in
-# `defaults`, not purely `conda-forge`. Because `defaults` and `conda-forge`
-# are substantially out of sync with regards to compiler versions right now,
-# we very much want to be able to build without looking at `defaults` at all.
-# So, we repackage an acceptable `libgfortran`. It doesn't seem worthwhile to
-# build our own HDF5 at the moment.
-packages=(system-libs libgfortran)
-
-if [ $use_system_blas -ne 0 ] ; then
-    # Build custom copies of the packages that depend sensitively on the system
-    # BLAS implementation.
-    packages+=(numpy scipy)
-fi
-
-if [ $use_system_mpi -ne 0 ] ; then
-    # Custom copies of packages that depend sensitively on the system MPI implementation.
-    packages+=(mpi4py)
+if [ $# -gt 0 ] ; then
+    # User has named packages to build on the command line.
+    implicit=false
+    packages=( "$@" )
 else
-    # `mpich` depends on `libgcc`, which is in the same boat as `libgfortran`.
-    packages+=(libgcc)
-fi
+    # Automatically determine which package need building.
+    implicit=true
 
-packages+=(
-    fftw
-    dedalus
-)
+    # conda-forge's `hdf5` depends on `libgfortran` which is only available in
+    # `defaults`, not purely `conda-forge`. Because `defaults` and
+    # `conda-forge` are substantially out of sync with regards to compiler
+    # versions right now, we very much want to be able to build without
+    # looking at `defaults` at all. So, we repackage an acceptable
+    # `libgfortran`. It doesn't seem worthwhile to build our own HDF5 at the
+    # moment.
+    packages=(system-libs libgfortran)
+
+    if [ $use_system_blas -ne 0 ] ; then
+        # Build custom copies of the packages that depend sensitively on the system
+        # BLAS implementation.
+        packages+=(numpy scipy)
+    fi
+
+    if [ $use_system_mpi -ne 0 ] ; then
+        # Custom copies of packages that depend sensitively on the system MPI implementation.
+        packages+=(mpi4py)
+    else
+        # `mpich` depends on `libgcc`, which is in the same boat as `libgfortran`.
+        packages+=(libgcc)
+    fi
+
+    packages+=(
+        fftw
+        dedalus
+    )
+fi
 
 for name in "${packages[@]}" ; do
+    [ -d "$name" ] || die "unknown package \"$name\""
+
     vers=$(grep 'set version =' $name/meta.yaml |sed -e 's/[^"]*"//' -e 's/".*//')
     build_number=$(grep 'set build_number =' $name/meta.yaml |sed -e 's/[^"]*"//' -e 's/".*//')
     build_string=$(grep 'set build_string =' $name/meta.yaml |sed -e 's/[^"]*"//' -e 's/".*//')
     pkg="$stack/conda-bld/$platform/$name-$vers-$build_number$build_string.tar.bz2"
 
-    if [ "$pkg" -nt "$name/meta.yaml" ] ; then
-       echo "skipping $name: package exists and is newer than $name/meta.yaml"
-    else
-        $stack/bin/conda build --override-channels -c conda-forge $name
+    if $implicit ; then
+        if [ "$pkg" -nt "$name/meta.yaml" ] ; then
+            echo "skipping $name: package exists and is newer than $name/meta.yaml"
+            continue
+        fi
     fi
+
+    $stack/bin/conda build --override-channels -c conda-forge $name
 done
 
 echo

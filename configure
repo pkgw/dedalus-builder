@@ -97,5 +97,5 @@ $stack/bin/python support/check-environment.py $stack/.environment.pkl
 # Guide the user.
 
 echo
-echo "If you are happy with the configuration, now run ./build-all to compile the software."
+echo "If you are happy with the configuration, now run ./compile to compile the software."
 echo

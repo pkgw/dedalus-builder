@@ -39,7 +39,7 @@ Then, run `./configure`, possibly adding a `--with-blas=LIBDIR` argument. This
 will validate your build configuration and save its parameters. If you need to
 alter your build environment, just rerun this script.
 
-Then run `./build-all`. This will compile Dedalus and its the MPI- and
+Then run `./compile`. This will compile Dedalus and its the MPI- and
 BLAS-sensitive dependencies, creating binary package files in the Conda
 format. The goal is that these builds should succeed reliably but there are
 likely bugs that need to be shaken out.

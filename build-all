@@ -34,25 +34,25 @@ export use_system_blas # these need to be exported now to take effect in the Jin
 export system_blas_dir
 export use_system_mpi
 
-packages=(system-libs)
+# conda-forge's `hdf5` depends on `libgfortran` which is only available in
+# `defaults`, not purely `conda-forge`. Because `defaults` and `conda-forge`
+# are substantially out of sync with regards to compiler versions right now,
+# we very much want to be able to build without looking at `defaults` at all.
+# So, we repackage an acceptable `libgfortran`. It doesn't seem worthwhile to
+# build our own HDF5 at the moment.
+packages=(system-libs libgfortran)
 
 if [ $use_system_blas -ne 0 ] ; then
     # Build custom copies of the packages that depend sensitively on the system
     # BLAS implementation.
     packages+=(numpy scipy)
-else
-    # conda-forge's `openblas` depends on `libgfortran` which is only
-    # available in `defaults`, not purely `conda-forge`, so we repackage an
-    # appropriate version while `defaults` and `conda-forge` are substantially
-    # out of sync with regards to compiler versions.
-    packages+=(libgfortran)
 fi
 
 if [ $use_system_mpi -ne 0 ] ; then
     # Custom copies of packages that depend sensitively on the system MPI implementation.
     packages+=(mpi4py)
 else
-    # Same deal as above, except with `mpich` depending on `libgcc`
+    # `mpich` depends on `libgcc`, which is in the same boat as `libgfortran`.
     packages+=(libgcc)
 fi
 

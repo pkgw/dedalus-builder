@@ -36,6 +36,12 @@ packages=(
 
 if [ $use_system_mpi -ne 0 ] ; then
     packages+=(system-mpi-libs mpi4py)
+else
+    # mpich depends on libgcc which is only available in `defaults`, not
+    # purely `conda-forge`, so we repackage an appropriate version while
+    # `defaults` and `conda-forge` are substantially out of sync with regards
+    # to compiler versions.
+    packages+=(libgcc)
 fi
 
 packages+=(

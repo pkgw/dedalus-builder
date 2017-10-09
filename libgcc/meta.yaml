@@ -1,0 +1,39 @@
+# Copyright (c) 2017, Peter K. G. Williams.
+#
+# This file is part of Dedalus, which is free software distributed
+# under the terms of the GPLv3 license.  A copy of the license should
+# have been included in the file 'LICENSE.txt', and is also available
+# online at <http://www.gnu.org/licenses/gpl-3.0.html>.
+
+# This is just a repackage of default's libgcc, since conda-forge doesn't
+# provide it and we want to be able to make environments that do not depend on
+# defaults at all (since it has currently issued a major upgrade that
+# conda-forge has not yet caught up with).
+
+{% set name = "libgcc" %}
+{% set version = "4.8.5" %}
+{% set build_number = "1" %}
+{% set build_string = "ded" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  fn:  {{ name }}-{{ version }}.tar.bz2
+  url: https://anaconda.org/anaconda/{{ name }}/{{ version }}/download/linux-64/{{ name }}-{{ version }}-{{ build_number }}.tar.bz2  # [linux]
+  sha256: 3bbdfd4029d74f6b19da7e97f06c91b71266afefc2d9d268783c68412cd69427  # [linux]
+  url: https://anaconda.org/anaconda/{{ name }}/{{ version }}/download/osx-64/{{ name }}-{{ version }}-{{ build_number }}.tar.bz2  # [osx]
+  sha256: 5a53fa5291873916bde4c6266aca6e79127a4ff8bb9897dfb1470bf059164364  # [osx]
+
+build:
+  number: {{ build_number }}
+  string: {{ build_number }}{{ build_string }}
+
+requirements:
+  build:
+  run:
+
+about:
+  license: GPL3
+  summary: GNU Compiler Collection support libraries

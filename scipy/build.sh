@@ -24,4 +24,14 @@ else
     unset LDFLAGS
 fi
 
-exec $PYTHON setup.py install --single-version-externally-managed --record=record.txt
+# Sigh, what a hack
+
+if [ "$CC" = icc ] ; then
+    build_flags=(--compiler=intelem --fcompiler=intelem)
+else
+    build_flags=()
+fi
+
+$PYTHON setup.py config "${build_flags[@]}"
+$PYTHON setup.py build "${build_flags[@]}"
+$PYTHON setup.py install --single-version-externally-managed --record=record.txt

@@ -49,6 +49,9 @@ test:
   commands:
     - conda inspect linkages -p $PREFIX scipy  # [not win]
     - conda inspect objects -p $PREFIX scipy  # [osx]
+  imports:
+    - scipy
+    - scipy.sparse
 
 about:
   home: http://www.scipy.org/

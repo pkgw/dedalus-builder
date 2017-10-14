@@ -10,12 +10,18 @@
 set -e
 eval $($DEDALUS_BUILDER_SETUP)
 
+# see fftw-3.3.6/m4/ax_cc_maxopt.m4 for their default optimization flags,
+# which only get applied if $CFLAGS is empty. Our build environment might set
+# $CFLAGS so it is safest to ensure that the optimizer flags are always set.
+
 if [[ `uname` == 'Darwin' ]]; then
     export LIBRARY_SEARCH_VAR=DYLD_FALLBACK_LIBRARY_PATH
+    export CFLAGS="$CFLAGS -O3 -fomit-frame-pointer -fstrict-aliasing -ffast-math"
     export CXXFLAGS="-stdlib=libc++ $CXXFLAGS"
     export CXX_LDFLAGS="-stdlib=libc++ $CXX_LDFLAGS"
 else
     export LIBRARY_SEARCH_VAR=LD_LIBRARY_PATH
+    export CFLAGS="$CFLAGS -O3 -fomit-frame-pointer -malign-double -fstrict-aliasing -ffast-math"
 fi
 
 export LDFLAGS="$LDFLAGS -L${PREFIX}/lib"

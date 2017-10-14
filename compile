@@ -105,8 +105,10 @@ for name in "${packages[@]}" ; do
       die "package build failed! Consult $name/build.log for details."
 done
 
-echo
-echo "You can now create a new Python environment with Dedalus and IPython by running"
-echo "\"./install-fresh <prefix>\", or install Dedalus into an existing environment"
-echo "by running \"./install-into <prefix>\"."
-echo
+if $implicit ; then
+    echo
+    echo "You can now create a new Python environment with Dedalus and IPython by running"
+    echo "\"./install-fresh <prefix>\", or install Dedalus into an existing environment"
+    echo "by running \"./install-into <prefix>\"."
+    echo
+fi
